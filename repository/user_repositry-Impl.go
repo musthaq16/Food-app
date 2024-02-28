@@ -3,9 +3,9 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"food-app/data/request"
 	"food-app/helper"
 	"food-app/model"
+	"food-app/utils"
 
 	"gorm.io/gorm"
 )
@@ -79,13 +79,29 @@ func (u *UserRepositoryImpl) Save(user model.User) error {
 }
 
 // Update implements UserRepository.
-func (u *UserRepositoryImpl) Update(user model.User) {
-	var updateUser = request.UpdateUserRequest{
-		Id:       user.Id,
-		Username: user.UserName,
-		Email:    user.Email,
-		Password: user.Password,
+func (u *UserRepositoryImpl) Update(user, prevUpdated model.User) {
+	if user.Id == 0 {
+		user.Id = prevUpdated.Id
 	}
-	result := u.DB.Model(&user).Updates(updateUser)
+	if user.Email == "" {
+		user.Email = prevUpdated.Email
+	}
+	if user.UserName == "" {
+		user.UserName = prevUpdated.UserName
+	}
+	if user.Password != "" {
+		user.Password, _ = utils.HashPassword(user.Password)
+	}
+	if user.Password == "" {
+		user.Password = prevUpdated.Password
+	}
+	// var updateUser = request.UpdateUserRequest{
+	// 	Id:       user.Id,
+	// 	Username: user.UserName,
+	// 	Email:    user.Email,
+	// 	Password: user.Password,
+	// }
+	// fmt.Println("Updated userr", updateUser)
+	result := u.DB.Save(&user)
 	helper.ErrorPanic(result.Error)
 }

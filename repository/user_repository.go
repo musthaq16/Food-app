@@ -6,7 +6,7 @@ import (
 
 type UserRepository interface {
 	Save(user model.User) error
-	Update(user model.User)
+	Update(user, prevUpdated model.User)
 	Delete(userId int)
 	FindById(userId int) (model.User, error)
 	FindAll() []model.User

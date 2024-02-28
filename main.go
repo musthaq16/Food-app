@@ -36,9 +36,10 @@ func main() {
 
 	//initialize Controller
 	authenticationController := controller.NewAuthenticationController(authenticationService)
+	usersController := controller.NewUserController(userRepository)
 
 	//Routes
-	routes := router.NewRouter(authenticationController)
+	routes := router.NewRouter(userRepository, authenticationController, usersController)
 
 	server := &http.Server{
 		Addr:    loadConfig.ServerPort,
