@@ -54,8 +54,9 @@ func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
 // FindByUserName implements UserRepository.
 func (u *UserRepositoryImpl) FindByUserName(username string) (model.User, error) {
 	var user model.User
+	fmt.Println(username)
 
-	result := u.DB.First(&user, "username = ?", username)
+	result := u.DB.First(&user, u.DB.Where("user_name = ? ", username))
 
 	if result.Error != nil {
 		fmt.Println("username is not found....")

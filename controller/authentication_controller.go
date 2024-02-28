@@ -8,7 +8,9 @@ import (
 	"food-app/service"
 	"net/http"
 
+	"github.com/badoux/checkmail"
 	"github.com/gin-gonic/gin"
+	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
 type AuthenticationController struct {
@@ -63,6 +65,31 @@ func (controller *AuthenticationController) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, resp)
 		return
 	}
+
+	//email validating
+	email_VAlidate_err := checkmail.ValidateFormat(createUserRequest.Email)
+	if email_VAlidate_err != nil {
+		fmt.Println("wrong email format @...")
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: "Mail Format is Wrong...",
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	password_Validate_err := passwordvalidator.Validate(createUserRequest.Password, 50)
+	if password_Validate_err != nil {
+		fmt.Println("Password is not strong..")
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: fmt.Sprintf("%s", password_Validate_err),
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
 	err = controller.AuthenticationService.Register(createUserRequest)
 	if err != nil {
 		fmt.Println("in controller auth..the account already exist..")
