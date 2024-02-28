@@ -25,6 +25,7 @@ func NewRouter(userRepository repository.UserRepository, authenticationControlle
 	userRouter := router.Group("/user")
 	userRouter.GET("/Getallusers", middleware.DeserializeUser(userRepository), userController.GetAllUsers)
 	userRouter.PATCH("/UpdateMe", middleware.DeserializeUser(userRepository), userController.UpdateMe)
+	userRouter.DELETE("/DeleteMe", middleware.DeserializeUser(userRepository),userController.DeleteUser)
 
 	return service
 }

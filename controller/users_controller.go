@@ -56,3 +56,20 @@ func (controller *UserController) UpdateMe(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (controller *UserController) DeleteUser(ctx *gin.Context) {
+
+	var id interface{}
+	id, _ = ctx.Get("currentId")
+	currentId, _ := strconv.Atoi(fmt.Sprint(id))
+	fmt.Println(currentId)
+
+	controller.userRepository.Delete(currentId)
+
+	resp := response.WebResponse{
+		Code:    200,
+		Status:  "OK",
+		Message: "Deleted your Profile Successfully",
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
