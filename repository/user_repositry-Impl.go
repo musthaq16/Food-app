@@ -14,8 +14,8 @@ type UserRepositoryImpl struct {
 	DB *gorm.DB
 }
 
-func NewUserRepositoryImpl(Db *gorm.DB) UserRepository {
-	return &UserRepositoryImpl{DB: Db}
+func NewUserRepositoryImpl(DB *gorm.DB) UserRepository {
+	return &UserRepositoryImpl{DB: DB}
 }
 
 // Delete implements UserRepository.
@@ -66,9 +66,15 @@ func (u *UserRepositoryImpl) FindByUserName(username string) (model.User, error)
 }
 
 // Save implements UserRepository.
-func (u *UserRepositoryImpl) Save(user model.User) {
+func (u *UserRepositoryImpl) Save(user model.User) error {
 	result := u.DB.Create(&user)
-	helper.ErrorPanic(result.Error)
+	if result.Error != nil {
+		fmt.Println("there is error in storing model", result.Error)
+		return result.Error
+	}
+	// helper.ErrorPanic(result.Error)
+	return nil
+
 }
 
 // Update implements UserRepository.

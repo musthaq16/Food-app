@@ -30,7 +30,7 @@ func (a *AuthenticationServiceImpl) LogIn(user request.LoginRequest) (string, er
 	//Find the username in db
 	new_user, user_err := a.UserRepository.FindByUserName(user.Username)
 	if user_err != nil {
-		return "", errors.New("invalid username or password.")
+		return "", errors.New("invalid username or password")
 	}
 
 	config, _ := config.LoadConfig(".")
@@ -46,7 +46,7 @@ func (a *AuthenticationServiceImpl) LogIn(user request.LoginRequest) (string, er
 }
 
 // Register implements AuthenticationService.
-func (a *AuthenticationServiceImpl) Register(user request.CreateUserRequest) {
+func (a *AuthenticationServiceImpl) Register(user request.CreateUserRequest) error {
 	hashedPassword, err := utils.HashPassword(user.Password)
 	helper.ErrorPanic(err)
 	newUser := model.User{
@@ -54,6 +54,8 @@ func (a *AuthenticationServiceImpl) Register(user request.CreateUserRequest) {
 		Email:    user.Email,
 		Password: hashedPassword,
 	}
-	a.UserRepository.Save(newUser)
+	ifAlready_error := a.UserRepository.Save(newUser)
+
+	return ifAlready_error
 
 }

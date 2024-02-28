@@ -6,5 +6,5 @@ import (
 
 type AuthenticationService interface {
 	LogIn(user request.LoginRequest) (string, error)
-	Register(user request.CreateUserRequest)
+	Register(user request.CreateUserRequest) error
 }
