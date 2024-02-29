@@ -16,6 +16,9 @@ type Config struct {
 
 	ServerPort string `mapstructure:"PORT"`
 
+	UserMailID   string `mapstructure:"USERMAILID"`
+	MailPassword string `mapstructure:"MAILPASSWORD"`
+
 	TokenExpiresIn time.Duration `mapstructure:"TOKEN_EXPIRED_IN"`
 	TokenMaxAge    int           `mapstructure:"TOKEN_MAXAGE"`
 	SecretKey      string        `mapstructure:"TOKEN_SECRET"`

@@ -26,7 +26,7 @@ func main() {
 	db := config.ConnectDB(&loadConfig)
 	validate := validator.New()
 
-	db.Table("users").AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.User{}, &model.OneTimePassword{})
 
 	//initialize Repository
 	userRepository := repository.NewUserRepositoryImpl(db)

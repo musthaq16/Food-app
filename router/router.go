@@ -21,11 +21,13 @@ func NewRouter(userRepository repository.UserRepository, authenticationControlle
 	authenticationRouter := router.Group("/auth")
 	authenticationRouter.POST("/register", authenticationController.Register)
 	authenticationRouter.POST("/login", authenticationController.LogIn)
+	authenticationRouter.POST("/forgetPassword", authenticationController.ForgetPassword)
+	authenticationRouter.POST("/resetPassword/:otpToken", authenticationController.ResetPassword)
 
 	userRouter := router.Group("/user")
 	userRouter.GET("/Getallusers", middleware.DeserializeUser(userRepository), userController.GetAllUsers)
 	userRouter.PATCH("/UpdateMe", middleware.DeserializeUser(userRepository), userController.UpdateMe)
-	userRouter.DELETE("/DeleteMe", middleware.DeserializeUser(userRepository),userController.DeleteUser)
+	userRouter.DELETE("/DeleteMe", middleware.DeserializeUser(userRepository), userController.DeleteUser)
 
 	return service
 }

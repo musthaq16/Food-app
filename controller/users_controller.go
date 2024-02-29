@@ -40,15 +40,13 @@ func (controller *UserController) UpdateMe(ctx *gin.Context) {
 	var id interface{}
 	id, _ = ctx.Get("currentId")
 	currentId, _ := strconv.Atoi(fmt.Sprint(id))
-	fmt.Println(currentId)
 
 	prevUpdated, err := controller.userRepository.FindById(currentId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"Status": "NOT OKAY", "Message": "The user is not vailable on db."})
 	}
-	fmt.Println("prev Updated::::", prevUpdated.Id)
 	controller.userRepository.Update(UpdateUserRequest, prevUpdated)
-	// fmt.Println(UpdateUserRequest)
+
 	resp := response.WebResponse{
 		Code:    200,
 		Status:  "OK",
@@ -62,7 +60,6 @@ func (controller *UserController) DeleteUser(ctx *gin.Context) {
 	var id interface{}
 	id, _ = ctx.Get("currentId")
 	currentId, _ := strconv.Atoi(fmt.Sprint(id))
-	fmt.Println(currentId)
 
 	controller.userRepository.Delete(currentId)
 

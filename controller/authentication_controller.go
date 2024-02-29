@@ -60,7 +60,7 @@ func (controller *AuthenticationController) Register(ctx *gin.Context) {
 		resp := response.WebResponse{
 			Code:    http.StatusBadRequest,
 			Status:  "NOT OK",
-			Message: "Failed to create user.",
+			Message: "Failed to create and bind user.",
 		}
 		ctx.JSON(http.StatusBadRequest, resp)
 		return
@@ -108,4 +108,76 @@ func (controller *AuthenticationController) Register(ctx *gin.Context) {
 		Message: "Succesfully Created user",
 	}
 	ctx.JSON(http.StatusOK, resp)
+}
+
+func (controller *AuthenticationController) ForgetPassword(ctx *gin.Context) {
+	forgetPasswordReqMail := request.ForgetPasswordRequest{}
+
+	err := ctx.ShouldBindJSON(&forgetPasswordReqMail)
+	if err != nil {
+		fmt.Println("errrrorrrrrr", err)
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: "Failed to Bind Password..",
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	ForgetPasswd_err := controller.AuthenticationService.ForgetPassword(forgetPasswordReqMail)
+	if ForgetPasswd_err != nil {
+		fmt.Println("errrrorrrrrr", ForgetPasswd_err)
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: fmt.Sprintln(ForgetPasswd_err),
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	resp := response.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "OK",
+		Message: "Succesfully Sent Reset Password to Email",
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (controller *AuthenticationController) ResetPassword(ctx *gin.Context) {
+
+	otpToken := ctx.Params.ByName("otpToken")
+	fmt.Println("tokenn issss", otpToken)
+
+	resetPassword := request.ResetPasswordRequest{}
+
+	err := ctx.ShouldBindJSON(&resetPassword)
+	if err != nil {
+		fmt.Println("errrrorrrrrr", err)
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: "Failed to Bind ResetPassword..",
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	resestPsswd_err := controller.AuthenticationService.ResetPassword(resetPassword, otpToken)
+	if resestPsswd_err != nil {
+		fmt.Println("errrrorrrrrr", err)
+		resp := response.WebResponse{
+			Code:    http.StatusBadRequest,
+			Status:  "NOT OK",
+			Message: fmt.Sprintln(err),
+		}
+		ctx.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	resp := response.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "OK",
+		Message: "Succesfully Resetted the Password",
+	}
+	ctx.JSON(http.StatusOK, resp)
+
 }

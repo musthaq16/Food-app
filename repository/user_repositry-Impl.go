@@ -54,9 +54,22 @@ func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
 // FindByUserName implements UserRepository.
 func (u *UserRepositoryImpl) FindByUserName(username string) (model.User, error) {
 	var user model.User
-	fmt.Println(username)
 
 	result := u.DB.First(&user, u.DB.Where("user_name = ? ", username))
+
+	if result.Error != nil {
+		fmt.Println("username is not found....")
+		return user, errors.New("No username is found ")
+	}
+	return user, nil
+
+}
+
+// FindByEmail implements UserRepository.
+func (u *UserRepositoryImpl) FindByEmail(email string) (model.User, error) {
+	var user model.User
+
+	result := u.DB.First(&user, u.DB.Where("email = ? ", email))
 
 	if result.Error != nil {
 		fmt.Println("username is not found....")
@@ -95,13 +108,40 @@ func (u *UserRepositoryImpl) Update(user, prevUpdated model.User) {
 	if user.Password == "" {
 		user.Password = prevUpdated.Password
 	}
-	// var updateUser = request.UpdateUserRequest{
-	// 	Id:       user.Id,
-	// 	Username: user.UserName,
-	// 	Email:    user.Email,
-	// 	Password: user.Password,
-	// }
-	// fmt.Println("Updated userr", updateUser)
 	result := u.DB.Save(&user)
 	helper.ErrorPanic(result.Error)
+}
+
+func (u *UserRepositoryImpl) SaveOtp(otp model.OneTimePassword) error {
+
+	result := u.DB.Create(&otp)
+	if result.Error != nil {
+		fmt.Println("there is error in storing OTP model", result.Error)
+		return result.Error
+	}
+	// helper.ErrorPanic(result.Error)
+	return nil
+
+}
+
+func (u *UserRepositoryImpl) DeleteOtp(otpId int) error {
+
+	var otpTable model.OneTimePassword
+	result := u.DB.Where("id = ?", otpId).Delete(&otpTable)
+	helper.ErrorPanic(result.Error)
+	return nil
+
+}
+
+func (u *UserRepositoryImpl) OtpVerifyInToken(otpToken string) (model.OneTimePassword, error) {
+	fmt.Println("insideotpVerifier....")
+	var otp model.OneTimePassword
+
+	result := u.DB.First(&otp, u.DB.Where("otp = ? ", otpToken))
+
+	if result.Error != nil {
+		fmt.Println("Otp is not found ....")
+		return otp, errors.New("No otp is found ")
+	}
+	return otp, nil
 }
